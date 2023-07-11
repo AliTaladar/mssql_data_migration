@@ -45,14 +45,7 @@ def parse_primary_key_nonclustered(match):
     parameters = match.group(5)
     file_group = match.group(6)
 
-    parameters_pattern = r"PAD_INDEX = (?P<PAD_INDEX>\w+), STATISTICS_NORECOMPUTE = (?P<STATISTICS_NORECOMPUTE>\w+), SORT_IN_TEMPDB = (?P<SORT_IN_TEMPDB>\w+), IGNORE_DUP_KEY = (?P<IGNORE_DUP_KEY>\w+), ONLINE = (?P<ONLINE>\w+), ALLOW_ROW_LOCKS = (?P<ALLOW_ROW_LOCKS>\w+), ALLOW_PAGE_LOCKS = (?P<ALLOW_PAGE_LOCKS>\w+), OPTIMIZE_FOR_SEQUENTIAL_KEY = (?P<OPTIMIZE_FOR_SEQUENTIAL_KEY>\w+)"
-
-    parameters_match = re.search(parameters_pattern, parameters)
-
-    if parameters_match:
-        constraint_parameters = parameters_match.groupdict()
-    else:
-        constraint_parameters = None
+    constraint_parameters = parameters.split(', ')
 
     print(f'schema: {schema}')
     print(f'table_name: {table_name}')
@@ -70,14 +63,7 @@ def parse_unique_nonclustered(match):
     parameters = match.group(5)
     file_group = match.group(6)
 
-    parameters_pattern = r"PAD_INDEX = (?P<PAD_INDEX>\w+), STATISTICS_NORECOMPUTE = (?P<STATISTICS_NORECOMPUTE>\w+), SORT_IN_TEMPDB = (?P<SORT_IN_TEMPDB>\w+), IGNORE_DUP_KEY = (?P<IGNORE_DUP_KEY>\w+), ONLINE = (?P<ONLINE>\w+), ALLOW_ROW_LOCKS = (?P<ALLOW_ROW_LOCKS>\w+), ALLOW_PAGE_LOCKS = (?P<ALLOW_PAGE_LOCKS>\w+), OPTIMIZE_FOR_SEQUENTIAL_KEY = (?P<OPTIMIZE_FOR_SEQUENTIAL_KEY>\w+)"
-
-    parameters_match = re.search(parameters_pattern, parameters)
-
-    if parameters_match:
-        constraint_parameters = parameters_match.groupdict()
-    else:
-        constraint_parameters = None
+    constraint_parameters = parameters.split(', ')
 
     print(f'schema: {schema}')
     print(f'table_name: {table_name}')

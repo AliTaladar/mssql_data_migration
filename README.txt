@@ -1,0 +1,1 @@
+This is a simple python library that facilitates data migrations from a Microsoft SQL Server to another.

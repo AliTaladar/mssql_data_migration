@@ -40,18 +40,27 @@ def interpret_commands(commands):
                 print(command)
                 raise ValueError('Wrong Alter Format')
             elif alter_type == 'NONCLUSTERED':
+                print(alter_type)
                 ACP.parse_primary_key_nonclustered(match)
                 print('\n\n')
+            elif alter_type == 'UNIQUE':
+                print(alter_type)
+                ACP.parse_unique_nonclustered(match)
+                print('\n\n')
             elif alter_type == 'DEFAULT WITHOUT CONSTRAINT':
+                print(alter_type)
                 ACP.parse_default_without_constraint(match)
                 print('\n\n')
             elif alter_type == 'DEFAULT WITH CONSTRAINT':
+                print(alter_type)
                 ACP.parse_default_with_constraint(match)
                 print('\n\n')
             elif alter_type == 'FOREIGN KEY':
+                print(alter_type)
                 ACP.parse_foreign_key(match)
                 print('\n\n')
             elif alter_type == 'FOREIGN KEY CHECK':
+                print(alter_type)
                 ACP.parse_foreign_key_check(match)
                 print('\n\n')
     return tables

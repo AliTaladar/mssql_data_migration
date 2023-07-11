@@ -4,6 +4,7 @@ import re
 def find_alter_type(command):
     # regex patterns for each type of alter command
     primary_key_nonclustered_pattern = r'ALTER\s+TABLE\s+\[(.*?)\].\[(.*?)\]\s+ADD\s+CONSTRAINT\s+\[(.*?)\]\s+PRIMARY\s+KEY\s+NONCLUSTERED\s+\((.*?)\)\s*WITH\s+\((.*?)\)\s+ON\s+\[(.*?)\]'
+    unique_nonclustered = r'ALTER\s+TABLE\s+\[(.*?)\].\[(.*?)\]\s+ADD\s+CONSTRAINT\s+\[(.*?)\]\s+UNIQUE\s+NONCLUSTERED\s+\((.*?)\)\s*WITH\s+\((.*?)\)\s+ON\s+\[(.*?)\]'
     default_value_without_constraint_pattern = r'ALTER\s+TABLE\s+\[(.*?)\].\[(.*?)\]\s+ADD\s+DEFAULT\s+\((.*?)\)\s+FOR\s+\[(.*?)\]'
     default_value_with_constraint_pattern = r'ALTER\s+TABLE\s+\[(.*?)\].\[(.*?)\]\s+ADD\s+CONSTRAINT\s+\[(.*?)\]\s+DEFAULT\s+\((.*?)\)\s+FOR\s+\[(.*?)\]'
     foreign_key_pattern = r'ALTER\s+TABLE\s+\[(.*?)\].\[(.*?)\]\s+WITH\s+CHECK\s+ADD\s+CONSTRAINT\s+\[(.*?)\]\s+FOREIGN\s+KEY\((.*?)\)\s+REFERENCES\s+\[(.*?)\].\[(.*?)\]\s+\((.*?)\)\s*((ON UPDATE CASCADE)|(ON DELETE CASCADE))*'
@@ -12,6 +13,7 @@ def find_alter_type(command):
     # search for any matches
     primary_key_nonclustered_match = re.search(
         primary_key_nonclustered_pattern, command)
+    unique_nonclustered_match = re.search(unique_nonclustered, command)
     default_value_without_constraint_match = re.search(
         default_value_without_constraint_pattern, command)
     default_value_with_constraint_match = re.search(
@@ -21,6 +23,8 @@ def find_alter_type(command):
 
     if primary_key_nonclustered_match:
         return 'NONCLUSTERED', primary_key_nonclustered_match
+    elif unique_nonclustered_match:
+        return 'UNIQUE', unique_nonclustered_match
     elif default_value_without_constraint_match:
         return 'DEFAULT WITHOUT CONSTRAINT', default_value_without_constraint_match
     elif default_value_with_constraint_match:
@@ -34,6 +38,31 @@ def find_alter_type(command):
 
 
 def parse_primary_key_nonclustered(match):
+    schema = match.group(1)
+    table_name = match.group(2)
+    constraint_name = match.group(3)
+    columns = match.group(4).strip()
+    parameters = match.group(5)
+    file_group = match.group(6)
+
+    parameters_pattern = r"PAD_INDEX = (?P<PAD_INDEX>\w+), STATISTICS_NORECOMPUTE = (?P<STATISTICS_NORECOMPUTE>\w+), SORT_IN_TEMPDB = (?P<SORT_IN_TEMPDB>\w+), IGNORE_DUP_KEY = (?P<IGNORE_DUP_KEY>\w+), ONLINE = (?P<ONLINE>\w+), ALLOW_ROW_LOCKS = (?P<ALLOW_ROW_LOCKS>\w+), ALLOW_PAGE_LOCKS = (?P<ALLOW_PAGE_LOCKS>\w+), OPTIMIZE_FOR_SEQUENTIAL_KEY = (?P<OPTIMIZE_FOR_SEQUENTIAL_KEY>\w+)"
+
+    parameters_match = re.search(parameters_pattern, parameters)
+
+    if parameters_match:
+        constraint_parameters = parameters_match.groupdict()
+    else:
+        constraint_parameters = None
+
+    print(f'schema: {schema}')
+    print(f'table_name: {table_name}')
+    print(f'constraint_name: {constraint_name}')
+    print(f'columns: {columns}')
+    print(f'parameters: {constraint_parameters}')
+    print(f'file_group: {file_group}')
+
+
+def parse_unique_nonclustered(match):
     schema = match.group(1)
     table_name = match.group(2)
     constraint_name = match.group(3)

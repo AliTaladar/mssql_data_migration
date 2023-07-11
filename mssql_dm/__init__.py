@@ -9,7 +9,7 @@ from mssql_dm.table_objects.Insertion import Insertion
 
 def migrate(output_tables, src_script):
     commands = SP.parse_script(src_script)
-    interpret_commands(commands)
+    tables = interpret_commands(commands)
     validate_tables(output_tables, src_script)
 
 
@@ -54,8 +54,7 @@ def interpret_commands(commands):
             elif alter_type == 'FOREIGN KEY CHECK':
                 ACP.parse_foreign_key_check(match)
                 print('\n\n')
-    # print(len(tables['[Lims].[Sysmlcountry]'].insertions))
-
+    return tables
 
 def validate_tables(tables, script):
     pass
